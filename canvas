@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<ImageView
+android:id="@+id/imageView"
+android:layout_width="match_parent"
+android:layout_height="match_parent" />
+<Button
+android:id="@+id/forwardButton"
+android:layout_width="125dp"
+android:layout_height="wrap_content"
+android:layout_alignParentStart="true"
+android:layout_alignParentTop="true"
+android:layout_alignParentEnd="true"
+android:layout_alignParentBottom="true"
+android:layout_marginStart="10dp"
+android:layout_marginTop="76dp"
+android:layout_marginEnd="276dp"
+android:layout_marginBottom="607dp"
+android:text="Forward" />
+<Button
+android:id="@+id/backwardButton"
+android:layout_width="130dp"
+android:layout_height="wrap_content"
+android:layout_alignParentStart="true"
+android:layout_alignParentTop="true"
+android:layout_alignParentEnd="true"
+android:layout_alignParentBottom="true"
+android:layout_marginStart="149dp"
+android:layout_marginTop="77dp"
+android:layout_marginEnd="132dp"
+android:layout_marginBottom="606dp"
+android:text="Backward" />
+<Button
+android:id="@+id/flipButton"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_alignParentStart="true"
+android:layout_alignParentTop="true"
+android:layout_alignParentEnd="true"
+android:layout_alignParentBottom="true"
+android:layout_marginStart="298dp"
+android:layout_marginTop="78dp"
+android:layout_marginEnd="19dp"
+android:layout_marginBottom="605dp"
+android:text="Flip" />
+</RelativeLayout>
+MainActivity.java
+package com.example.third;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.AnimationSet;
+import android.animation.ObjectAnimator;
+import android.widget.Button;
+import android.widget.ImageView;
+public class MainActivity extends Activity {
+private ImageView carImageView;
+private Button forwardButton;
+private Button backwardButton;
+private Button flipButton;
+private int carXPosition = 0; // Initial X position of the car
+private Bitmap bg;
+private Canvas canvas;
+private Paint paint;
+private boolean isZoomed = false;
+private boolean isFlipped = false;
+@Override
+public void onCreate(Bundle savedInstanceState)
+{
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+carImageView = findViewById(R.id.imageView);
+forwardButton = findViewById(R.id.forwardButton);
+backwardButton = findViewById(R.id.backwardButton);
+flipButton = findViewById(R.id.flipButton);
+// Creating a Bitmap
+bg = Bitmap.createBitmap(720, 1280, Bitmap.Config.ARGB_8888);
+// Setting the Bitmap as a background for the ImageView
+carImageView.setBackgroundDrawable(new
+BitmapDrawable(bg));
+// Creating the Canvas Object
+canvas = new Canvas(bg);
+// Creating the Paint Object and set its color & TextSize
+paint = new Paint();
+//canvas.drawRGB(100, 200, 255);
+paint.setColor(Color.RED);
+drawRectangle(100, 600, 500, 200, canvas, paint);
+canvas.drawCircle(350, 650, 150, paint);
+paint.setColor(Color.WHITE);
+drawRectangle(350, 550, 100, 50, canvas, paint);
+paint.setColor(Color.BLACK);
+canvas.drawCircle(500, 800, 50, paint);
+canvas.drawCircle(200, 800, 50, paint);
+paint.setColor(Color.GRAY);
+canvas.drawCircle(500, 800, 30, paint);
+canvas.drawCircle(200, 800, 30, paint);
+//paint.setColor(Color.GRAY);
+//drawRectangle(0, 850, 800, 200, canvas, paint);
+//paint.setColor(Color.GREEN);
+//drawRectangle(0, 1050, 800, 300, canvas, paint);
+forwardButton.setOnClickListener(new View.OnClickListener()
+{
+@Override
+public void onClick(View v)
+{
+moveCar(100); // Move the car forward by 50 pixels (adjust as
+needed)
+}
+});
+backwardButton.setOnClickListener(new View.OnClickListener()
+{
+@Override
+public void onClick(View v)
+{
+rotateCar(180); // Move the car backward by 50 pixels (adjust
+as needed)
+}
+});
+carImageView.setOnClickListener(new View.OnClickListener()
+{
+@Override
+public void onClick(View v)
+{
+toggleZoom(); // Toggle zoom in and out when the image is
+tapped
+}
+});
+flipButton.setOnClickListener(new View.OnClickListener()
+{
+@Override
+public void onClick(View view)
+{
+flipCard();
+}
+});
+}
+private void drawRectangle(int left, int top, int right, int bottom, Canvas
+canvas, Paint paint) {
+right = left + right; // width is the distance from left to right
+bottom = top + bottom; // height is the distance from top to bottom
+canvas.drawRect(left, top, right, bottom, paint);
+}
+private void moveCar(int distance)
+{
+// Calculate the new X position for the car
+int newXPosition = carXPosition + distance;
+// Create a TranslateAnimation to move the car
+TranslateAnimation animation = new TranslateAnimation(
+carXPosition, newXPosition, 0, 0);
+animation.setDuration(1000); // Animation duration in milliseconds
+animation.setFillAfter(true);
+// Apply the animation to the car ImageView
+carImageView.startAnimation(animation);
+// Update the car's X position
+carXPosition = newXPosition;
+}
+private void rotateCar(int distance)
+{
+// Calculate the new X position for the car
+int newXPosition = carXPosition + distance;
+// Create a TranslateAnimation to move the car
+TranslateAnimation translateAnimation = new TranslateAnimation(
+carXPosition, newXPosition, 0, 0);
+translateAnimation.setDuration(1000); // Animation duration in
+milliseconds
+translateAnimation.setFillAfter(true);
+// Create a RotateAnimation to rotate the car
+RotateAnimation rotateAnimation = new RotateAnimation(
+0, 180, Animation.RELATIVE_TO_SELF, 0.5f,
+Animation.RELATIVE_TO_SELF, 0.5f);
+rotateAnimation.setDuration(1000); // Animation duration in
+milliseconds
+rotateAnimation.setFillAfter(true);
+// Create an AnimationSet to apply both animations
+AnimationSet animationSet = new AnimationSet(true);
+animationSet.addAnimation(translateAnimation);
+animationSet.addAnimation(rotateAnimation);
+// Apply the animation to the car ImageView
+carImageView.startAnimation(animationSet);
+// Update the car's X position
+carXPosition = newXPosition;
+}
+private void toggleZoom()
+{
+float scaleFrom, scaleTo;
+if (isZoomed) {
+scaleFrom = 1.5f;
+scaleTo = 1.0f;
+} else {
+scaleFrom = 1.0f;
+scaleTo = 1.5f;
+}
+// Create a ScaleAnimation to zoom in and out
+ScaleAnimation scaleAnimation = new ScaleAnimation(
+scaleFrom, scaleTo,
+scaleFrom, scaleTo,
+Animation.RELATIVE_TO_SELF, 0.5f,
+Animation.RELATIVE_TO_SELF, 0.5f
+);
+scaleAnimation.setDuration(500); // Animation duration in milliseconds
+scaleAnimation.setFillAfter(true);
+// Apply the animation to the car ImageView
+carImageView.startAnimation(scaleAnimation);
+// Toggle the zoom state
+isZoomed = !isZoomed;
+}
+private void flipCard()
+{
+float startRotation = isFlipped ? 180f : 0f;
+float endRotation = isFlipped ? 0f : 180f;
+ObjectAnimator animator = ObjectAnimator.ofFloat(carImageView,
+"rotationY", startRotation, endRotation);
+animator.setDuration(500); // Animation duration in milliseconds
+animator.start();
+isFlipped = !isFlipped;
+}
+}
